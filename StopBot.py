@@ -2,11 +2,14 @@ import discord
 import youtube_dl
 import os
 from discord.ext import commands
+from discord.utils import get
+from discord import FFmpegPCMAudio
+from youtube_dl import YoutubeDL
 
 TOKEN = os.environ["TOKEN"]
 
 #client = discord.Client()
-client = commands.Bot(command_prefix='ඞ')
+client = commands.Bot(command_prefix='$')
 
 players = {}
 
@@ -55,14 +58,30 @@ async def leave(ctx):
     await ctx.voice_client.disconnect()
 
 
-#OUTDATED CODE: takes in a URL and has the bot start playing the youtube video url
-#@client.command(pass_context=True)
-#async def play(ctx, url):
-    #server = ctx.message.server
-    #voice_client = client.voice_client_in(server)
-    #player = await voice_client.create_ytdl_player(url)
-    #players[server.id] = player
-    #player.start()
+#bot will play the audio of the youtube video that it sent via URL
+@client.command()
+async def play(ctx, url):
+    YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
+    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+    voice = get(client.voice_clients, guild=ctx.guild)
+
+    if not voice.is_playing():
+        with YoutubeDL(YDL_OPTIONS) as ydl:
+            info = ydl.extract_info(url, download=False)
+        URL = info['formats'][0]['url']
+        voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+        voice.is_playing()
+    else:
+        await ctx.send("Already playing song")
+        return
+
+
+#TEMP bot will leave and join again, stoppig what is playing
+@client.command(pass_context=True)
+async def stop(ctx):
+     await ctx.voice_client.disconnect()
+     channel = ctx.message.author.voice.channel
+     await channel.connect()
 
 
 client.run(TOKEN)
