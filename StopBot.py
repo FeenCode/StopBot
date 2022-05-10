@@ -79,7 +79,9 @@ async def join(ctx):
     channel = ctx.message.author.voice.channel
     await channel.connect()
 
-    greeting = 'https://www.youtube.com/watch?v=eaEMSKzqGAg'
+    #greeting = 'https://www.youtube.com/watch?v=eaEMSKzqGAg'
+    greeting = 'https://youtu.be/JQ3Zn2Gtlt0?t=4'
+    
 
     YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
     FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
@@ -105,8 +107,11 @@ async def leave(ctx):
 @client.command()
 async def play(ctx, url):
     
+    message = ctx.message
+    await message.delete()
+
     await oldplay(ctx, url)
-    message = await ctx.send('Playing: '+url)
+    message = await ctx.send('Now Playing: '+url)
     await message.add_reaction('⏯')
     await message.add_reaction('⏹')
 
