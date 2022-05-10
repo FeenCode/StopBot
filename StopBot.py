@@ -2,11 +2,13 @@ import discord
 import discord_components
 import youtube_dl
 import os
+import random
 from discord.ext import commands
 from discord.utils import get
 from discord import FFmpegPCMAudio
 from discord_components import Button, Select, SelectOption, ComponentsBot
 from youtube_dl import YoutubeDL
+
 
 TOKEN = os.environ["TOKEN"]
 
@@ -15,6 +17,7 @@ TOKEN = os.environ["TOKEN"]
 client = ComponentsBot("$")
 
 recently_played = []
+greetings = ['https://www.youtube.com/watch?v=eaEMSKzqGAg', 'https://youtu.be/JQ3Zn2Gtlt0?t=4', 'https://youtu.be/TRgdA9_FsXM?t=1', 'https://youtu.be/yoF2A_12pPk?t=2']
 
 #Print log on startup
 @client.event
@@ -79,8 +82,7 @@ async def join(ctx):
     channel = ctx.message.author.voice.channel
     await channel.connect()
 
-    #greeting = 'https://www.youtube.com/watch?v=eaEMSKzqGAg'
-    greeting = 'https://youtu.be/JQ3Zn2Gtlt0?t=4'
+    greeting = random.choice(greetings)
     
 
     YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
