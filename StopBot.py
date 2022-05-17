@@ -18,7 +18,32 @@ TOKEN = os.environ["TOKEN"]
 client = ComponentsBot(".")
 
 recently_played = []
-greetings = ['https://www.youtube.com/watch?v=eaEMSKzqGAg', 'https://youtu.be/JQ3Zn2Gtlt0?t=4', 'https://youtu.be/TRgdA9_FsXM?t=1', 'https://youtu.be/yoF2A_12pPk?t=2', 'https://www.youtube.com/watch?v=Fgk4Cd7h6ak', 'https://youtu.be/lqYqyHBTZjg', 'https://www.youtube.com/watch?v=6Joyj0dmkug&ab_channel=CartmanHD']
+greetings = ['https://www.youtube.com/watch?v=eaEMSKzqGAg', 'https://youtu.be/JQ3Zn2Gtlt0?t=4', 'https://youtu.be/TRgdA9_FsXM?t=1', 'https://youtu.be/yoF2A_12pPk?t=2', 'https://youtu.be/lqYqyHBTZjg', 'https://www.youtube.com/watch?v=6Joyj0dmkug&ab_channel=CartmanHD']
+
+
+#YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True', skip_download: 'True'}
+#FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+
+YDL_OPTIONS = {
+    'format': 'bestaudio/best',
+    'outtmpl': 'downloads/%(extractor)s-%(id)s-%(title)s.%(ext)s',
+    'restrictfilenames': True,
+    'noplaylist': True,
+    'nocheckcertificate': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': True,
+    'no_warnings': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0'  # ipv6 addresses cause issues sometimes
+}
+
+FFMPEG_OPTIONS = {
+    'before_options': '-nostdin',
+    'options': '-vn'
+}
+
+
 
 #Print log on startup
 @client.event
@@ -38,6 +63,10 @@ async def on_message(message):
 
   if message.content.startswith('ඞ!'):
     await message.channel.send('SUS!')
+    await play(ctx, 'https://www.youtube.com/watch?v=_-CzeGEmfwQ&ab_channel=ManMadePancake')
+
+  if message.content.startswith('!Rumble'):
+    await play(ctx, 'The Rumbling by SiM')
 
   if message.content.startswith('Noly'):
     await message.channel.send('', file=discord.File('./Assets/no_bitches.jpg'))
@@ -128,9 +157,6 @@ async def play(ctx, *search):
       await ctx.send("Already playing song")
       return
 
-
-    YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
-    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
     
     if not isurl(search):
       with YoutubeDL(YDL_OPTIONS) as ydl:
@@ -207,7 +233,6 @@ async def resume(ctx):
     
     voice.resume()
     return
-
 
 
 #bot will leave and join again, stoppig what is playing
